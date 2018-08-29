@@ -1,13 +1,14 @@
 import argparse
 import whois
 import requests
+import time
 
 
 def is_server_respond_with_200(url):
     try:
-        return requests.get(url).status_code == 200
+        return requests.get(url).ok
     except requests.exceptions.ConnectionError as err:
-        return False
+        return None
 
 
 def get_domain_expiration_date(url):
@@ -24,8 +25,8 @@ def get_path():
 
 def read_urls_from_file(path):
     with open(path) as textfile:
-        urls = textfile.readlines()
-    return list(map(lambda x: x.rstrip(), urls))
+        urls = tuple(textfile.readlines())
+    return tuple(map(lambda x: x.rstrip(), urls))
 
 
 def get_url_statuses(urls):
@@ -33,10 +34,12 @@ def get_url_statuses(urls):
     for url in urls:
         if is_server_respond_with_200(url):
             status = "Respond"
+        elif is_server_respond_with_200(url) is None:
+            status = "NOT found"
         else:
             status = "NOT respond"
         expires = get_domain_expiration_date(url) or "<no date>"
-        statuses.append([status, expires])
+        statuses.append((status, expires))
     return zip(urls, statuses)
 
 
@@ -47,11 +50,12 @@ def print_urls_info(urls_info):
 
 
 def main():
+    t = time.time()
     path = get_path().file_path or exit("empty path")
     urls = read_urls_from_file(path)
     url_with_statuses = get_url_statuses(urls)
     print_urls_info(url_with_statuses)
-
+    print(time.time()-t)
 
 if __name__ == '__main__':
     main()
