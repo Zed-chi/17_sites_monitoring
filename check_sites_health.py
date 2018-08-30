@@ -50,12 +50,10 @@ def print_urls_info(urls_info):
 
 
 def main():
-    t = time.time()
     path = get_path().file_path or exit("empty path")
     urls = read_urls_from_file(path)
     url_with_statuses = get_url_statuses(urls)
     print_urls_info(url_with_statuses)
-    print(time.time()-t)
 
 if __name__ == '__main__':
     main()
