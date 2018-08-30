@@ -7,7 +7,7 @@ import time
 def is_server_respond_with_200(url):
     try:
         return requests.get(url).ok
-    except requests.exceptions.ConnectionError as err:
+    except requests.exceptions.ConnectionError:
         return None
 
 
